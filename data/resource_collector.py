@@ -689,7 +689,10 @@ def handler():
         region_namespace = {'Region': region, 'Namespaces' : cw_custom_namespace_retriever(config) }
         region_namespaces['RegionNamespaces'].append(region_namespace)
         for resource in resources:
-            decorated_resources.append(router(resource, config))
+            if 'elasticloadbalancing' in resource["ResourceARN"] and ( '/net/' in resource["ResourceARN"] or '/app/' in resource["ResourceARN"] ) and ':listener/' in resource["ResourceARN"]:
+                continue
+            else:
+                decorated_resources.append(router(resource, config))
     cn = open(custom_namespace_file, "w")
     cn.write(json.dumps(region_namespaces, indent=4, default=str))
     cn.close()
